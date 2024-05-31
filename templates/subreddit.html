@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{ subreddit }} - Bulletin Board
+{% endblock %}
+
+{% block content %}
+<style>
+    .main-content {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 20px;
+        border-radius: 8px;
+        background-color: #ffffff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    .main-content h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 20px;
+    }
+    .post {
+        margin-bottom: 20px;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        background-color: #f4f4f9;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .post h2 {
+        margin-bottom: 10px;
+        color: #007bff;
+    }
+    .post p {
+        margin-bottom: 10px;
+        color: #333;
+    }
+    .post img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 4px;
+        margin-top: 10px;
+    }
+    .post .user-info {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1em;
+    }
+    .post .user-info-left {
+        display: flex;
+        align-items: center;
+    }
+    .post .user-info img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        margin-right: 1em;
+        border: 1px solid #ccc;
+    }
+    .post .user-info p {
+        margin: 0;
+        font-weight: bold;
+    }
+    .post .actions {
+        display: flex;
+        flex-direction: column;
+        margin-top: 1em;
+    }
+    .post .actions form {
+        display: inline;
+        margin-bottom: 10px;
+    }
+    .post .actions button {
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        background-color: #ff4500;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    .post .actions button:hover {
+        background-color: #e03c00;
+    }
+    .post textarea {
+        width: calc(100% - 20px);
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #f4f4f9;
+        color: #333;
+        margin-bottom: 10px;
+    }
+    .comments {
+        list-style-type: none;
+        padding: 0;
+        margin-top: 1em;
+    }
+    .comments li {
+        margin-bottom: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #f4f4f9;
+    }
+    .comments li p {
+        margin: 0;
+    }
+    .comments li p + p {
+        margin-top: 5px;
+        color: #666;
+    }
+</style>
+
+<div class="main-content">
+    <h1>{{ subreddit }}</h1>
+    {% for post in posts %}
+        <div class="post">
+            <div class="user-info">
+                <div class="user-info-left">
+                    {% if post.user.profile_picture %}
+                        <img src="/{{ post.user.profile_picture }}" alt="{{ post.user.username }}'s profile picture">
+                    {% else %}
+                        <img src="{{ url_for('static', filename='images/default_profile.png') }}" alt="Default profile picture">
+                    {% endif %}
+                    <p>{{ post.user.username }}</p>
+                </div>
+                {% if current_user.is_authenticated and current_user.id != post.user.id %}
+                    <form method="post" action="{{ url_for('follow_user', user_id=post.user.id) }}">
+                        <button type="submit">Follow</button>
+                    </form>
+                {% endif %}
+            </div>
+            <h2><a href="{{ url_for('view_post', post_id=post.id) }}" style="color:#007bff; text-decoration:none;">{{ post.title }}</a></h2>
+            <p>{{ post.content }}</p>
+            {% if post.image_url %}
+                <img src="/{{ post.image_url }}" alt="Post image">
+            {% endif %}
+            <p>Posted on {{ post.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+            <p>Likes: {{ post.like_count }}</p>
+
+            {% if current_user.is_authenticated %}
+                <div class="actions">
+                    <form method="post" action="{{ url_for('like_post', post_id=post.id) }}">
+                        <button type="submit">Like</button>
+                    </form>
+                    <form method="post" action="{{ url_for('add_comment', post_id=post.id) }}">
+                        <textarea name="content" required></textarea>
+                        <button type="submit">Comment</button>
+                    </form>
+                </div>
+            {% endif %}
+
+            <h3>Comments</h3>
+            {% if post.comments %}
+                <ul class="comments">
+                    {% for comment in post.comments %}
+                        <li>
+                            <p>{{ comment.content }}</p>
+                            <p>By: {{ comment.user.username }} on {{ comment.created_at }}</p>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No comments yet.</p>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

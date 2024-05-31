@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CompSci Reddit{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <a href="{{ url_for('home') }}">CompSci Reddit</a>
+        </div>
+        <nav class="nav-links">
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('subreddit', name='badminton') }}">Badminton</a>
+            <a href="{{ url_for('subreddit', name='cars') }}">Cars</a>
+            <a href="{{ url_for('subreddit', name='cybersecurity') }}">Cybersecurity</a>
+        </nav>
+        <div class="user-menu">
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('profile', user_id=current_user.id) }}">Profile</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">Login</a>
+                <a href="{{ url_for('register') }}">Register</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <div class="content-wrapper">
+        <main class="main-content">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 CompSci Reddit</p>
+    </footer>
+</body>
+</html>

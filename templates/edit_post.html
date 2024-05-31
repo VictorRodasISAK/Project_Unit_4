@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Post{% endblock %}
+
+{% block content %}
+<style>
+    .form-container {
+        max-width: 600px;
+        margin: 40px auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        background-color: #ffffff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    .form-container label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+        color: #333;
+    }
+    .form-container input[type="text"],
+    .form-container textarea,
+    .form-container input[type="file"],
+    .form-container select {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #f4f4f9;
+        color: #333;
+    }
+    .form-container textarea {
+        resize: vertical;
+        height: 150px;
+    }
+    .form-container button {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 4px;
+        background-color: #ff4500;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    .form-container button:hover {
+        background-color: #e03c00;
+    }
+</style>
+
+<h1 style="text-align:center; color:#ff4500;">Edit Post</h1>
+<div class="form-container">
+    <form method="post" action="{{ url_for('edit_post', post_id=post.id) }}" enctype="multipart/form-data">
+        <label for="title">Title:</label>
+        <input type="text" name="title" id="title" value="{{ post.title }}" required>
+
+        <label for="content">Content:</label>
+        <textarea name="content" id="content" required>{{ post.content }}</textarea>
+
+        <label for="image">Upload Image:</label>
+        <input type="file" name="image" id="image">
+
+        <label for="topic">Topic:</label>
+        <select name="topic" id="topic" required>
+            <option value="BADMINTON" {% if post.topic == 'BADMINTON' %}selected{% endif %}>Badminton</option>
+            <option value="CARS" {% if post.topic == 'CARS' %}selected{% endif %}>Cars</option>
+            <option value="CYBERSECURITY" {% if post.topic == 'CYBERSECURITY' %}selected{% endif %}>Cybersecurity</option>
+        </select>
+
+        <button type="submit">Update Post</button>
+    </form>
+</div>
+{% endblock %}
+
